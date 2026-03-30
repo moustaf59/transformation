@@ -7,979 +7,620 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Transform">
 <meta name="theme-color" content="#0a0a0a">
-<title>Transformation · 6 mois</title>
+<title>Transform &bull; 6 mois</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-
-  :root {
-    --bg: #0a0a0a;
-    --bg2: #111111;
-    --bg3: #1a1a1a;
-    --bg4: #222222;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #f0f0f0;
-    --text2: #888;
-    --text3: #555;
-    --accent: #e8e8e8;
-    --green: #4ade80;
-    --green-dim: rgba(74,222,128,0.12);
-    --amber: #fbbf24;
-    --amber-dim: rgba(251,191,36,0.12);
-    --red: #f87171;
-    --red-dim: rgba(248,113,113,0.1);
-    --blue: #60a5fa;
-    --blue-dim: rgba(96,165,250,0.1);
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* NAV */
-  .nav {
-    position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    display: flex;
-    padding-bottom: var(--safe-bottom);
-    z-index: 100;
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding: 10px 4px 12px;
-    border: none;
-    background: none;
-    color: var(--text3);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-  .nav-btn.active { color: var(--accent); }
-  .nav-btn svg { width: 22px; height: 22px; stroke-width: 1.5; }
-
-  /* SCREENS */
-  .screen {
-    display: none;
-    padding: calc(var(--safe-top) + 16px) 16px calc(90px + var(--safe-bottom));
-    min-height: 100dvh;
-    animation: fadeUp 0.25s ease;
-  }
-  .screen.active { display: block; }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-
-  /* HEADER */
-  .page-header { margin-bottom: 24px; }
-  .page-label { font-size: 11px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
-  .page-title { font-size: 26px; font-weight: 600; color: var(--text); letter-spacing: -0.5px; }
-  .page-date { font-size: 13px; color: var(--text2); margin-top: 2px; }
-
-  /* CARDS */
-  .card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 12px;
-  }
-  .card-title {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--text3);
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    margin-bottom: 12px;
-  }
-
-  /* STATS ROW */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .stat-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 12px;
-  }
-  .stat-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .stat-value { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.5px; }
-  .stat-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-  /* CHECKLIST ITEMS */
-  .check-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: opacity 0.2s;
-    user-select: none;
-  }
-  .check-item:last-child { border-bottom: none; }
-  .check-item.done { opacity: 0.45; }
-  .check-box {
-    width: 22px; height: 22px;
-    border: 1.5px solid var(--border2);
-    border-radius: 6px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .check-item.done .check-box {
-    background: var(--green);
-    border-color: var(--green);
-  }
-  .check-icon { width: 14px; height: 14px; color: #000; display: none; }
-  .check-item.done .check-icon { display: block; }
-  .check-content { flex: 1; }
-  .check-name { font-size: 14px; font-weight: 500; color: var(--text); }
-  .check-detail { font-size: 12px; color: var(--text2); margin-top: 1px; line-height: 1.4; }
-  .check-time { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; flex-shrink: 0; }
-
-  /* PROGRESS BAR */
-  .progress-wrap { margin-bottom: 16px; }
-  .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-  .progress-label { font-size: 13px; color: var(--text2); }
-  .progress-val { font-size: 13px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--accent); }
-  .progress-bar { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-
-  /* WEIGHT INPUT */
-  .weight-input-wrap { display: flex; gap: 8px; margin-top: 12px; }
-  .weight-input {
-    flex: 1;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    color: var(--text);
-    outline: none;
-  }
-  .weight-input:focus { border-color: var(--accent); }
-  .weight-submit {
-    background: var(--accent);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #000;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .weight-submit:active { opacity: 0.7; }
-
-  /* WEIGHT LOG */
-  .weight-log-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .weight-log-item:last-child { border-bottom: none; }
-  .wl-date { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; }
-  .wl-val { font-size: 18px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
-  .wl-diff { font-size: 12px; font-family: 'DM Mono', monospace; }
-  .wl-diff.down { color: var(--green); }
-  .wl-diff.up { color: var(--red); }
-  .wl-diff.eq { color: var(--text3); }
-
-  /* PHASE TIMELINE */
-  .phase-item { display: flex; gap: 14px; margin-bottom: 16px; }
-  .phase-line { display: flex; flex-direction: column; align-items: center; }
-  .phase-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .phase-connector { width: 1px; flex: 1; background: var(--border); margin: 4px 0; }
-  .phase-body { flex: 1; padding-bottom: 4px; }
-  .phase-badge { display: inline-block; font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; }
-  .phase-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
-  .phase-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
-
-  /* MACRO BAR */
-  .macro-row { margin-bottom: 12px; }
-  .macro-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-  .macro-name { font-size: 12px; color: var(--text2); }
-  .macro-val { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text); }
-  .macro-bar { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-  .macro-fill { height: 100%; border-radius: 2px; }
-
-  /* SCORE */
-  .score-display {
-    text-align: center;
-    padding: 8px 0 4px;
-  }
-  .score-big { font-size: 48px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); letter-spacing: -2px; }
-  .score-label { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-  /* SPORT EXERCISE ROWS */
-  .ex-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .ex-row:last-child { border-bottom: none; }
-  .ex-name { font-size: 13px; color: var(--text); }
-  .ex-sets {
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-    color: var(--text2);
-    background: var(--bg3);
-    padding: 3px 8px;
-    border-radius: 5px;
-  }
-
-  /* SECTION LABEL */
-  .section-label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--text3);
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    margin: 20px 0 10px;
-  }
-
-  /* TAG */
-  .tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin: 3px 3px 3px 0;
-    border: 1px solid var(--border2);
-    color: var(--text2);
-  }
-
-  /* RESET BTN */
-  .reset-btn {
-    width: 100%;
-    padding: 12px;
-    background: none;
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    color: var(--text3);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: all 0.2s;
-  }
-  .reset-btn:active { background: var(--bg3); }
-
-  /* TODAY RING */
-  .today-ring-wrap { display: flex; justify-content: center; margin: 8px 0 20px; }
-  .ring-svg { transform: rotate(-90deg); }
-  .ring-track { fill: none; stroke: var(--bg4); }
-  .ring-fill { fill: none; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-  .ring-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
-  .ring-pct { font-size: 28px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
-  .ring-lbl { font-size: 11px; color: var(--text2); }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: calc(80px + var(--safe-bottom) + 12px);
-    left: 50%; transform: translateX(-50%);
-    background: var(--accent);
-    color: #000;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    z-index: 200;
-    opacity: 0;
-    transition: opacity 0.3s;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; }
-
-  /* SEGMENT CONTROL */
-  .segment { display: flex; background: var(--bg3); border-radius: 10px; padding: 3px; margin-bottom: 16px; }
-  .seg-btn {
-    flex: 1; padding: 8px 4px; border: none; background: none;
-    color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 12px;
-    cursor: pointer; border-radius: 8px; transition: all 0.2s;
-  }
-  .seg-btn.active { background: var(--bg2); color: var(--text); font-weight: 500; }
-
-  .empty-state { text-align: center; padding: 32px 16px; color: var(--text3); font-size: 13px; }
-
-  /* Big number highlight */
-  .big-num { font-size: 36px; font-weight: 600; font-family: 'DM Mono', monospace; letter-spacing: -1px; }
-
-  .dot-green { background: var(--green); }
-  .dot-amber { background: var(--amber); }
-  .dot-blue { background: var(--blue); }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#181818;--bg4:#222;--bg5:#2a2a2a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#f0f0f0;--text2:#999;--text3:#555;--accent:#e8e8e8;--green:#4ade80;--gdim:rgba(74,222,128,0.12);--amber:#fbbf24;--adim:rgba(251,191,36,0.12);--red:#f87171;--rdim:rgba(248,113,113,0.1);--blue:#60a5fa;--bdim:rgba(96,165,250,0.1);--purple:#a78bfa;--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+input,select,button{font-family:'DM Sans',sans-serif}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 12px;border:none;background:none;color:var(--text3);font-size:9px;letter-spacing:.03em;cursor:pointer;transition:color .2s}
+.nav-btn.active{color:var(--accent)}
+.nav-btn svg{width:20px;height:20px;stroke-width:1.5;fill:none;stroke:currentColor}
+.screen{display:none;padding:calc(var(--st) + 16px) 14px calc(88px + var(--sb));min-height:100dvh;animation:fu .22s ease}
+.screen.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pg-label{font-size:10px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:3px}
+.pg-title{font-size:24px;font-weight:600;letter-spacing:-.5px}
+.pg-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.card-title{font-size:10px;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:11px}
+.seg{display:flex;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:12px;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg-btn{flex:0 0 auto;padding:7px 11px;border:none;background:none;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;transition:all .2s;white-space:nowrap}
+.seg-btn.active{background:var(--bg);color:var(--text)}
+.ci{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:opacity .15s}
+.ci:last-child{border-bottom:none}
+.ci.done{opacity:.4}
+.ci-box{width:21px;height:21px;border:1.5px solid var(--border2);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ci.done .ci-box{background:var(--green);border-color:var(--green)}
+.ci-check{width:12px;height:12px;display:none;color:#000}
+.ci.done .ci-check{display:block}
+.ci-body{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:500}
+.ci-detail{font-size:11px;color:var(--text2);margin-top:1px;line-height:1.4}
+.ci-right{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;flex-shrink:0;text-align:right}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:12px 10px}
+.stat-lbl{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.08em;margin-bottom:3px}
+.stat-val{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-.5px}
+.stat-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.prog-wrap{margin-bottom:10px}
+.prog-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.prog-lbl{font-size:12px;color:var(--text2)}
+.prog-val{font-size:12px;font-weight:500;font-family:'DM Mono',monospace;color:var(--accent)}
+.prog-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.ring-wrap{display:flex;justify-content:center;margin:4px 0 18px;position:relative}
+.ring-inner{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-size:26px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-1px}
+.ring-lbl{font-size:10px;color:var(--text2);margin-top:1px}
+.w-input-row{display:flex;gap:8px;margin-top:10px}
+.w-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 13px;font-family:'DM Mono',monospace;font-size:17px;color:var(--text);outline:none}
+.w-input:focus{border-color:var(--accent)}
+.w-btn{background:var(--accent);border:none;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:600;color:#000;cursor:pointer;flex-shrink:0}
+.log-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.log-date{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+.log-val{font-size:17px;font-weight:600;font-family:'DM Mono',monospace}
+.log-diff{font-size:11px;font-family:'DM Mono',monospace}
+.log-diff.down{color:var(--green)}
+.log-diff.up{color:var(--red)}
+.ex-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;gap:10px}
+.ex-row:last-child{border-bottom:none}
+.ex-left{flex:1}
+.ex-name{font-size:13px;font-weight:500;line-height:1.3}
+.ex-tip{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.3}
+.ex-evo{font-size:10px;margin-top:2px}
+.ex-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ex-sets{font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);background:var(--bg3);padding:3px 8px;border-radius:5px;white-space:nowrap}
+.food-card{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px}
+.food-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.food-name{font-size:13px;font-weight:600}
+.food-cal{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--amber)}
+.food-macros{display:flex;gap:10px;margin-bottom:5px}
+.food-macro{font-size:10px;color:var(--text2)}
+.food-macro span{font-weight:500;color:var(--text)}
+.food-desc{font-size:11px;color:var(--text2);line-height:1.4}
+.food-badge{font-size:9px;padding:2px 7px;border-radius:4px;margin-top:5px;display:inline-block;font-family:'DM Mono',monospace;background:var(--bg4);color:var(--text2)}
+.supp-card{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px}
+.supp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.supp-name{font-size:13px;font-weight:600}
+.supp-pri{font-size:9px;padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace}
+.supp-body{font-size:11px;color:var(--text2);line-height:1.5}
+.supp-dose{font-size:11px;color:var(--accent);margin-top:4px;font-weight:500}
+.phase-item{display:flex;gap:12px;margin-bottom:14px}
+.phase-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.phase-connector{width:1px;flex:1;background:var(--border);margin:3px 0}
+.phase-line{display:flex;flex-direction:column;align-items:center}
+.phase-badge{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.06em;padding:2px 7px;border-radius:4px;margin-bottom:5px;display:inline-block}
+.phase-name{font-size:14px;font-weight:500;margin-bottom:2px}
+.phase-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + var(--sb));width:100%;border-top:1px solid var(--border2)}
+.modal-handle{width:36px;height:4px;background:var(--bg5);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:14px}
+.toast{position:fixed;bottom:calc(80px + var(--sb) + 10px);left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px}
+.cal-day-label{text-align:center;font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;padding:2px 0}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'DM Mono',monospace;background:var(--bg3);cursor:pointer;transition:all .15s;color:var(--text2);border:1px solid transparent;font-size:11px}
+.cal-day.today{border-color:var(--accent);color:var(--accent)}
+.cal-day.done{background:var(--gdim);color:var(--green)}
+.cal-day.rest{background:var(--adim);color:var(--amber)}
+.cal-day.future{opacity:.3;cursor:default}
+.cal-day.empty{background:transparent;border:none;cursor:default}
+.cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)}
+.cal-legend-dot{width:8px;height:8px;border-radius:50%}
+.edit-select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;-webkit-appearance:none;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.empty-state{text-align:center;padding:28px 16px;color:var(--text3);font-size:12px}
+.big-num{font-size:32px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-1px}
+button.ghost{background:none;border:1px solid var(--border2);border-radius:9px;padding:10px;color:var(--text3);font-size:12px;cursor:pointer;width:100%;margin-top:6px}
 </style>
 </head>
 <body>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- ═══════════════════ SCREEN: AUJOURD'HUI ═══════════════════ -->
+ 
+<!-- TODAY -->
 <div class="screen active" id="screen-today">
-  <div class="page-header">
-    <div class="page-label">Transformation · 6 mois</div>
-    <div class="page-title">Aujourd'hui</div>
-    <div class="page-date" id="today-date"></div>
+  <div style="margin-bottom:18px"><div class="pg-label">Transformation</div><div class="pg-title">Aujourd'hui</div><div class="pg-sub" id="today-date"></div></div>
+  <div class="ring-wrap">
+    <svg width="120" height="120" style="transform:rotate(-90deg)">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg4)" stroke-width="7"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73" id="ring-fill"/>
+    </svg>
+    <div class="ring-inner"><div class="ring-pct" id="ring-pct">0%</div><div class="ring-lbl">journee</div></div>
   </div>
-
-  <!-- Ring -->
-  <div class="today-ring-wrap">
-    <div class="ring-wrap">
-      <svg class="ring-svg" width="130" height="130" id="main-ring">
-        <circle class="ring-track" cx="65" cy="65" r="56" stroke-width="8"/>
-        <circle class="ring-fill" cx="65" cy="65" r="56" stroke-width="8" stroke="#e8e8e8"
-          stroke-dasharray="351.86" stroke-dashoffset="351.86" id="ring-progress"/>
-      </svg>
-      <div class="ring-center" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        <div class="ring-pct" id="ring-pct">0%</div>
-        <div class="ring-lbl">complété</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Repas -->
   <div class="card">
-    <div class="card-title">Repas du jour</div>
-    <div id="meals-list"></div>
+    <div class="card-title">Calories du jour</div>
+    <div class="stats3">
+      <div class="stat"><div class="stat-lbl">Objectif</div><div class="stat-val" style="font-size:16px">2000</div><div class="stat-sub">kcal</div></div>
+      <div class="stat"><div class="stat-lbl">Consomme</div><div class="stat-val" id="cal-consumed" style="font-size:16px;color:var(--amber)">0</div><div class="stat-sub">kcal</div></div>
+      <div class="stat"><div class="stat-lbl">Restant</div><div class="stat-val" id="cal-left" style="font-size:16px;color:var(--green)">2000</div><div class="stat-sub">kcal</div></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="cal-bar" style="width:0%;background:var(--amber)"></div></div>
   </div>
-
-  <!-- Hydratation -->
+  <div class="card"><div class="card-title">Repas du jour</div><div id="meals-list"></div></div>
   <div class="card">
     <div class="card-title">Hydratation</div>
-    <div class="progress-wrap" style="margin-bottom:8px;">
-      <div class="progress-header">
-        <span class="progress-label">Eau</span>
-        <span class="progress-val" id="water-val">0 / 2.5L</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="water-bar" style="width:0%;background:var(--blue);"></div></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button onclick="addWater(-0.25)" style="flex:1;padding:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">-250ml</button>
-      <button onclick="addWater(0.25)" style="flex:1;padding:10px;background:var(--blue-dim);border:1px solid rgba(96,165,250,0.2);border-radius:8px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">+250ml</button>
-      <button onclick="addWater(0.5)" style="flex:1;padding:10px;background:var(--blue-dim);border:1px solid rgba(96,165,250,0.2);border-radius:8px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">+500ml</button>
+    <div class="prog-wrap"><div class="prog-hdr"><span class="prog-lbl">Eau</span><span class="prog-val" id="water-val">0 / 2.5L</span></div><div class="prog-bar"><div class="prog-fill" id="water-bar" style="width:0%;background:var(--blue)"></div></div></div>
+    <div style="display:flex;gap:7px">
+      <button onclick="addWater(-0.25)" style="flex:1;padding:9px 4px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer">-250ml</button>
+      <button onclick="addWater(0.25)" style="flex:1.5;padding:9px 4px;background:var(--bdim);border:1px solid rgba(96,165,250,0.2);border-radius:8px;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer">+250ml</button>
+      <button onclick="addWater(0.5)" style="flex:1.5;padding:9px 4px;background:var(--bdim);border:1px solid rgba(96,165,250,0.2);border-radius:8px;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer">+500ml</button>
     </div>
   </div>
-
-  <!-- Habits -->
-  <div class="card">
-    <div class="card-title">Habitudes</div>
-    <div id="habits-list"></div>
-  </div>
-
-  <button class="reset-btn" onclick="resetDay()">Réinitialiser la journée</button>
+  <div class="card"><div class="card-title">Habitudes du jour</div><div id="habits-list"></div></div>
+  <div class="card"><div class="card-title">Complements alimentaires</div><div id="supps-list"></div></div>
+  <button class="ghost" onclick="resetDay()">Reinitialiser la journee</button>
 </div>
-
-<!-- ═══════════════════ SCREEN: SPORT ═══════════════════ -->
+ 
+<!-- NUTRITION -->
+<div class="screen" id="screen-nutrition">
+  <div style="margin-bottom:16px"><div class="pg-label">Base de donnees</div><div class="pg-title">Nutrition</div></div>
+  <div class="seg" id="nutri-seg">
+    <button class="seg-btn active" onclick="showNutriTab('petitdej',this)">Petit-dej</button>
+    <button class="seg-btn" onclick="showNutriTab('dejeuner',this)">Dejeuner</button>
+    <button class="seg-btn" onclick="showNutriTab('diner',this)">Diner</button>
+    <button class="seg-btn" onclick="showNutriTab('collation',this)">Collations</button>
+    <button class="seg-btn" onclick="showNutriTab('dessert',this)">Desserts</button>
+    <button class="seg-btn" onclick="showNutriTab('legumes',this)">Legumes</button>
+    <button class="seg-btn" onclick="showNutriTab('proteines',this)">Proteines</button>
+    <button class="seg-btn" onclick="showNutriTab('supplements',this)">Complements</button>
+  </div>
+  <div id="nutri-content"></div>
+</div>
+ 
+<!-- SPORT -->
 <div class="screen" id="screen-sport">
-  <div class="page-header">
-    <div class="page-label">Programme</div>
-    <div class="page-title">Sport</div>
+  <div style="margin-bottom:16px"><div class="pg-label">Programme</div><div class="pg-title">Sport</div></div>
+  <div class="seg" id="sport-seg">
+    <button class="seg-btn active" onclick="showSportTab('planning',this)">Planning</button>
+    <button class="seg-btn" onclick="showSportTab('lundi',this)">Lundi</button>
+    <button class="seg-btn" onclick="showSportTab('mercredi',this)">Mercredi</button>
+    <button class="seg-btn" onclick="showSportTab('vendredi',this)">Vendredi</button>
+    <button class="seg-btn" onclick="showSportTab('cardio',this)">Cardio</button>
+    <button class="seg-btn" onclick="showSportTab('progression',this)">Progression</button>
   </div>
-
-  <div class="segment">
-    <button class="seg-btn active" onclick="showSportTab('week')" id="seg-week">Semaine</button>
-    <button class="seg-btn" onclick="showSportTab('lundi')" id="seg-lundi">Lundi</button>
-    <button class="seg-btn" onclick="showSportTab('mercredi')" id="seg-mercredi">Mercredi</button>
-    <button class="seg-btn" onclick="showSportTab('vendredi')" id="seg-vendredi">Vendredi</button>
-    <button class="seg-btn" onclick="showSportTab('cardio')" id="seg-cardio">Cardio</button>
-  </div>
-
   <div id="sport-content"></div>
 </div>
-
-<!-- ═══════════════════ SCREEN: POIDS ═══════════════════ -->
-<div class="screen" id="screen-poids">
-  <div class="page-header">
-    <div class="page-label">Suivi</div>
-    <div class="page-title">Poids</div>
+ 
+<!-- SUIVI -->
+<div class="screen" id="screen-suivi">
+  <div style="margin-bottom:16px"><div class="pg-label">Suivi</div><div class="pg-title">Mon bilan</div></div>
+  <div class="card" style="text-align:center;padding:18px">
+    <div class="pg-label" style="margin-bottom:6px">Poids actuel</div>
+    <div class="big-num" id="cur-weight">-- kg</div>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px" id="weight-diff"></div>
+    <div class="prog-wrap" style="margin:12px 0 0"><div class="prog-hdr"><span class="prog-lbl">106 kg -> 88 kg</span><span class="prog-val" id="w-pct">0%</span></div><div class="prog-bar"><div class="prog-fill" id="w-bar" style="width:0%;background:var(--green)"></div></div></div>
   </div>
-
-  <!-- Current weight card -->
-  <div class="card" style="text-align:center;padding:20px 16px;">
-    <div class="page-label" style="margin-bottom:8px;">Poids actuel</div>
-    <div class="big-num" id="current-weight-display">— kg</div>
-    <div style="font-size:12px;color:var(--text2);margin-top:4px;" id="weight-diff-display"></div>
+  <div class="stats3">
+    <div class="stat"><div class="stat-lbl">Depart</div><div class="stat-val" style="color:var(--text2)">106</div><div class="stat-sub">kg</div></div>
+    <div class="stat"><div class="stat-lbl">Perdu</div><div class="stat-val" id="lost-kg" style="color:var(--green)">0</div><div class="stat-sub">kg</div></div>
+    <div class="stat"><div class="stat-lbl">Objectif</div><div class="stat-val" style="color:var(--green)">88</div><div class="stat-sub">kg</div></div>
   </div>
-
-  <!-- Progress bars -->
   <div class="card">
-    <div class="card-title">Progression</div>
-    <div class="progress-wrap">
-      <div class="progress-header">
-        <span class="progress-label">106 kg → 88 kg</span>
-        <span class="progress-val" id="weight-pct-val">0%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="weight-progress-bar" style="width:0%;background:var(--green);"></div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
-      <div class="stat-card" style="text-align:center;">
-        <div class="stat-label">Départ</div>
-        <div style="font-size:16px;font-weight:600;font-family:'DM Mono',monospace;">106</div>
-        <div class="stat-sub">kg</div>
-      </div>
-      <div class="stat-card" style="text-align:center;">
-        <div class="stat-label">Perdu</div>
-        <div style="font-size:16px;font-weight:600;font-family:'DM Mono',monospace;color:var(--green);" id="lost-display">0</div>
-        <div class="stat-sub">kg</div>
-      </div>
-      <div class="stat-card" style="text-align:center;">
-        <div class="stat-label">Objectif</div>
-        <div style="font-size:16px;font-weight:600;font-family:'DM Mono',monospace;">88</div>
-        <div class="stat-sub">kg</div>
-      </div>
-    </div>
+    <div class="card-title">Ajouter une pesee</div>
+    <div class="w-input-row"><input type="number" class="w-input" id="w-input" placeholder="95.0" step="0.1" min="40" max="200"><button class="w-btn" onclick="addWeight()">OK</button></div>
+    <div style="font-size:10px;color:var(--text3);margin-top:7px">Matin a jeun, memes conditions, 1x/semaine</div>
   </div>
-
-  <!-- Add weight -->
   <div class="card">
-    <div class="card-title">Ajouter une pesée</div>
-    <div class="weight-input-wrap">
-      <input type="number" class="weight-input" id="weight-input" placeholder="95.0" step="0.1" min="50" max="200">
-      <button class="weight-submit" onclick="addWeight()">OK</button>
+    <div class="card-title">Calendrier sport</div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green)"></div>Seance</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--amber)"></div>Repos actif</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--bg4)"></div>Repos</div>
     </div>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px;">Pèse-toi le matin à jeun, toujours dans les mêmes conditions.</div>
+    <div id="cal-container"></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text3)">Appuie sur un jour pour modifier</div>
   </div>
-
-  <!-- Weight log -->
-  <div class="card">
-    <div class="card-title">Historique</div>
-    <div id="weight-log"></div>
+  <div class="stats3">
+    <div class="stat"><div class="stat-lbl">Seances</div><div class="stat-val" id="month-sessions" style="color:var(--green)">0</div><div class="stat-sub">muscu</div></div>
+    <div class="stat"><div class="stat-lbl">Cardio</div><div class="stat-val" id="month-cardio" style="color:var(--blue)">0</div><div class="stat-sub">sessions</div></div>
+    <div class="stat"><div class="stat-lbl">Total</div><div class="stat-val" id="month-total" style="color:var(--accent)">0</div><div class="stat-sub">activites</div></div>
   </div>
+  <div class="card"><div class="card-title">Historique poids</div><div id="weight-log"></div></div>
+  <div class="card"><div class="card-title">Progression cible</div><div id="monthly-targets"></div></div>
 </div>
-
-<!-- ═══════════════════ SCREEN: PROGRESSION ═══════════════════ -->
+ 
+<!-- PROGRAMME -->
 <div class="screen" id="screen-prog">
-  <div class="page-header">
-    <div class="page-label">6 mois</div>
-    <div class="page-title">Progression</div>
-  </div>
-
-  <!-- Macros -->
+  <div style="margin-bottom:16px"><div class="pg-label">6 mois</div><div class="pg-title">Programme</div></div>
   <div class="card">
-    <div class="card-title">Objectifs nutritionnels · Phase 1</div>
-    <div class="macro-row">
-      <div class="macro-header"><span class="macro-name">Protéines</span><span class="macro-val">190g · 38%</span></div>
-      <div class="macro-bar"><div class="macro-fill" style="width:38%;background:var(--accent);"></div></div>
-    </div>
-    <div class="macro-row">
-      <div class="macro-header"><span class="macro-name">Glucides</span><span class="macro-val">190g · 38%</span></div>
-      <div class="macro-bar"><div class="macro-fill" style="width:38%;background:var(--green);"></div></div>
-    </div>
-    <div class="macro-row" style="margin-bottom:0;">
-      <div class="macro-header"><span class="macro-name">Lipides</span><span class="macro-val">67g · 24%</span></div>
-      <div class="macro-bar"><div class="macro-fill" style="width:24%;background:var(--amber);"></div></div>
-    </div>
-    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:center;">
-      <div style="text-align:center;">
-        <div style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;">2000</div>
-        <div style="font-size:11px;color:var(--text2);">kcal / jour</div>
-      </div>
-    </div>
+    <div class="card-title">Objectifs nutritionnels Phase 1</div>
+    <div style="display:flex;justify-content:center;margin-bottom:14px"><div style="text-align:center"><div class="big-num">2000</div><div style="font-size:11px;color:var(--text2)">kcal / jour</div></div></div>
+    <div class="prog-wrap"><div class="prog-hdr"><span class="prog-lbl">Proteines 190g</span><span class="prog-val">38%</span></div><div class="prog-bar"><div class="prog-fill" style="width:38%;background:var(--accent)"></div></div></div>
+    <div class="prog-wrap"><div class="prog-hdr"><span class="prog-lbl">Glucides 190g</span><span class="prog-val">38%</span></div><div class="prog-bar"><div class="prog-fill" style="width:38%;background:var(--green)"></div></div></div>
+    <div class="prog-wrap" style="margin-bottom:0"><div class="prog-hdr"><span class="prog-lbl">Lipides 67g</span><span class="prog-val">24%</span></div><div class="prog-bar"><div class="prog-fill" style="width:24%;background:var(--amber)"></div></div></div>
   </div>
-
-  <!-- Phases -->
   <div class="card">
     <div class="card-title">Les 3 phases</div>
-    <div class="phase-item">
-      <div class="phase-line">
-        <div class="phase-dot dot-green"></div>
-        <div class="phase-connector"></div>
-      </div>
-      <div class="phase-body">
-        <div class="phase-badge" style="background:rgba(74,222,128,0.12);color:var(--green);">PHASE 1 · M1-M2</div>
-        <div class="phase-name">Adaptation & démarrage</div>
-        <div class="phase-desc">Objectif −4 à −5 kg · Déficit 600 kcal/j<br>2x muscu · 1x cardio 30 min · Supprimer sucres liquides</div>
-      </div>
-    </div>
-    <div class="phase-item">
-      <div class="phase-line">
-        <div class="phase-dot" style="background:var(--accent);"></div>
-        <div class="phase-connector"></div>
-      </div>
-      <div class="phase-body">
-        <div class="phase-badge" style="background:rgba(232,232,232,0.08);color:var(--accent);">PHASE 2 · M3-M4</div>
-        <div class="phase-name">Accélération</div>
-        <div class="phase-desc">Objectif −7 à −8 kg · Déficit 700 kcal/j<br>3x muscu · 2x cardio 35 min · Recalcul calories à 95 kg</div>
-      </div>
-    </div>
-    <div class="phase-item" style="margin-bottom:0;">
-      <div class="phase-line">
-        <div class="phase-dot dot-amber"></div>
-      </div>
-      <div class="phase-body">
-        <div class="phase-badge" style="background:rgba(251,191,36,0.12);color:var(--amber);">PHASE 3 · M5-M6</div>
-        <div class="phase-name">Consolidation & recomposition</div>
-        <div class="phase-desc">Objectif −6 à −7 kg · Déficit modéré<br>3-4x muscu · 2x cardio 40 min · Refeed 1x/semaine</div>
-      </div>
-    </div>
+    <div class="phase-item"><div class="phase-line"><div class="phase-dot" style="background:var(--green)"></div><div class="phase-connector"></div></div><div><div class="phase-badge" style="background:var(--gdim);color:var(--green)">PHASE 1 M1-M2</div><div class="phase-name">Adaptation et demarrage</div><div class="phase-desc">Objectif -4 a -5 kg, Deficit 600 kcal/j<br>2x muscu/sem, 1x cardio 30 min</div></div></div>
+    <div class="phase-item"><div class="phase-line"><div class="phase-dot" style="background:var(--accent)"></div><div class="phase-connector"></div></div><div><div class="phase-badge" style="background:rgba(232,232,232,0.08);color:var(--accent)">PHASE 2 M3-M4</div><div class="phase-name">Acceleration</div><div class="phase-desc">Objectif -7 a -8 kg, Deficit 700 kcal/j<br>3x muscu/sem, 2x cardio, recalcul a 95 kg</div></div></div>
+    <div class="phase-item" style="margin-bottom:0"><div class="phase-line"><div class="phase-dot" style="background:var(--amber)"></div></div><div><div class="phase-badge" style="background:var(--adim);color:var(--amber)">PHASE 3 M5-M6</div><div class="phase-name">Consolidation</div><div class="phase-desc">Objectif -6 a -7 kg, Deficit modere<br>3-4x muscu/sem, 2x cardio 40 min</div></div></div>
   </div>
-
-  <!-- Progression cible -->
   <div class="card">
-    <div class="card-title">Progression cible mois par mois</div>
-    <div id="monthly-progress"></div>
-  </div>
-
-  <!-- Regles d'or -->
-  <div class="card">
-    <div class="card-title">Règles d'or</div>
-    <div style="display:flex;flex-wrap:wrap;">
-      <span class="tag">80/20</span>
-      <span class="tag">2L eau/jour</span>
-      <span class="tag">8h sommeil</span>
-      <span class="tag">Peser 1x/semaine</span>
-      <span class="tag">Protéines priorité</span>
-      <span class="tag">Muscle avant cardio</span>
-      <span class="tag">Recalcul à 95 kg</span>
-      <span class="tag">Plateaux = normal</span>
-    </div>
+    <div class="card-title">Regles d'or</div>
+    <div class="row"><span style="font-size:13px">Regle des 80/20</span><span style="font-size:11px;color:var(--text2)">80% sain, 20% plaisir</span></div>
+    <div class="row"><span style="font-size:13px">Hydratation</span><span style="font-size:11px;color:var(--blue)">2 a 2.5L / jour</span></div>
+    <div class="row"><span style="font-size:13px">Sommeil</span><span style="font-size:11px;color:var(--purple)">7h30 a 8h minimum</span></div>
+    <div class="row"><span style="font-size:13px">Peser</span><span style="font-size:11px;color:var(--text2)">1x/semaine, matin a jeun</span></div>
+    <div class="row"><span style="font-size:13px">Muscle avant cardio</span><span style="font-size:11px;color:var(--green)">Toujours</span></div>
+    <div class="row"><span style="font-size:13px">Recalculer a 95 kg</span><span style="font-size:11px;color:var(--amber)">Obligatoire</span></div>
+    <div class="row" style="border:none"><span style="font-size:13px">Plateau = normal</span><span style="font-size:11px;color:var(--text2)">+cardio ou refeed</span></div>
   </div>
 </div>
-
-<!-- NAV BAR -->
+ 
+<!-- MODAL CALENDRIER -->
+<div class="modal-bg" id="cal-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="cal-modal-title">Modifier ce jour</div>
+    <select class="edit-select" id="cal-edit-select">
+      <option value="">Repos</option>
+      <option value="muscu">Musculation</option>
+      <option value="cardio">Cardio</option>
+      <option value="skierg">SkiErg</option>
+      <option value="run">Footing</option>
+      <option value="marche">Marche active</option>
+      <option value="rest">Repos actif</option>
+    </select>
+    <button class="w-btn" style="width:100%;padding:13px" onclick="saveCalDay()">Enregistrer</button>
+  </div>
+</div>
+ 
 <nav class="nav">
   <button class="nav-btn active" onclick="showScreen('today')" id="nav-today">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-    Aujourd'hui
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Jour
+  </button>
+  <button class="nav-btn" onclick="showScreen('nutrition')" id="nav-nutrition">
+    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Nutrition
   </button>
   <button class="nav-btn" onclick="showScreen('sport')" id="nav-sport">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
-    Sport
+    <svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M6 12h12"/></svg>Sport
   </button>
-  <button class="nav-btn" onclick="showScreen('poids')" id="nav-poids">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 17l4-8 4 4 4-6 4 5"/></svg>
-    Poids
+  <button class="nav-btn" onclick="showScreen('suivi')" id="nav-suivi">
+    <svg viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 5"/></svg>Suivi
   </button>
   <button class="nav-btn" onclick="showScreen('prog')" id="nav-prog">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
-    Programme
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>Plan
   </button>
 </nav>
-
+ 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const MEALS = [
-  { id:'breakfast', time:'07:00', name:'Petit-déjeuner', detail:'3 oeufs + 2 blancs · 60g flocons d\'avoine · 1 banane' },
-  { id:'snack', time:'10:30', name:'Collation', detail:'200g yaourt grec 0% · 20g amandes · 1 pomme' },
-  { id:'lunch', time:'13:00', name:'Déjeuner', detail:'200g poulet/poisson · 150g riz · 200g légumes vapeur' },
-  { id:'preworkout', time:'16:30', name:'Pré-séance', detail:'2 galettes de riz + 30g beurre de cacahuète' },
-  { id:'dinner', time:'20:00', name:'Dîner', detail:'200g saumon/boeuf 5% · 150g patate douce · salade' },
-];
-
-const HABITS = [
-  { id:'nosugardrinc', name:'Zéro sucre liquide', detail:'Eau, thé, café sans sucre uniquement' },
-  { id:'protein', name:'Protéines à chaque repas', detail:'Au moins 30g par repas' },
-  { id:'veggies', name:'Légumes au déjeuner & dîner', detail:'200g minimum' },
-  { id:'nogrigg', name:'Pas de grignotage nocturne', detail:'Rien après 21h' },
-];
-
-const WORKOUTS = {
-  lundi: {
-    title: 'Bas du corps',
-    desc: 'Quadriceps · Fessiers · Mollets',
-    exercises: [
-      { name:'Squat barre / goblet squat', sets:'4 × 10' },
-      { name:'Presse à cuisses', sets:'3 × 12' },
-      { name:'Fentes marchées', sets:'3 × 10/j' },
-      { name:'Hip thrust', sets:'3 × 15' },
-      { name:'Mollets debout', sets:'4 × 15' },
-    ]
-  },
-  mercredi: {
-    title: 'Haut du corps — Push',
-    desc: 'Pectoraux · Épaules · Triceps',
-    exercises: [
-      { name:'Développé couché', sets:'4 × 10' },
-      { name:'Développé militaire haltères', sets:'3 × 12' },
-      { name:'Écarté poulie basse', sets:'3 × 15' },
-      { name:'Élévations latérales', sets:'4 × 15' },
-      { name:'Triceps poulie haute', sets:'3 × 15' },
-    ]
-  },
-  vendredi: {
-    title: 'Haut du corps — Pull',
-    desc: 'Dos · Biceps · Abdos',
-    exercises: [
-      { name:'Tirage vertical prise large', sets:'4 × 10' },
-      { name:'Rowing barre ou haltères', sets:'3 × 12' },
-      { name:'Face pull', sets:'3 × 15' },
-      { name:'Curl biceps haltères', sets:'3 × 12' },
-      { name:'Gainage planche', sets:'3 × 45s' },
-    ]
-  },
-  cardio: {
-    title: 'Cardio',
-    desc: 'SkiErg · Footing · Marche active',
-    exercises: [
-      { name:'Phase 1 : SkiErg / marche rapide', sets:'30-40 min' },
-      { name:'Phase 2 : Intervalles 1min run / 2min marche', sets:'30 min' },
-      { name:'Phase 3 : Footing continu', sets:'30-40 min' },
-    ]
-  }
+const MEALS=[{id:'breakfast',time:'07:00',name:'Petit-dejeuner',detail:'3 oeufs + 2 blancs, 60g flocons avoine, 1 banane',cal:490,p:38,g:54,l:11},{id:'snack',time:'10:30',name:'Collation',detail:'200g yaourt grec 0%, 20g amandes, 1 pomme',cal:250,p:22,g:22,l:9},{id:'lunch',time:'13:00',name:'Dejeuner',detail:'200g poulet/poisson, 150g riz, 200g legumes',cal:510,p:52,g:54,l:7},{id:'preworkout',time:'16:30',name:'Pre-seance',detail:'2 galettes riz, 30g beurre cacahuete',cal:270,p:9,g:28,l:14},{id:'dinner',time:'20:00',name:'Diner',detail:'200g saumon/boeuf 5%, 150g patate douce, salade',cal:480,p:46,g:32,l:16}];
+const HABITS=[{id:'nosugar',name:'Zero sucre liquide',detail:'Eau, the, cafe noir uniquement'},{id:'protein',name:'Proteines a chaque repas',detail:'Minimum 30g par repas'},{id:'veggies',name:'Legumes x2 repas',detail:'200g min dejeuner et diner'},{id:'sleep',name:'8h de sommeil',detail:'Au lit avant 23h'},{id:'nosnack',name:'Pas de grignotage nocturne',detail:'Cuisine fermee apres 21h'}];
+const SUPPS=[{id:'whey',name:'Whey proteine',time:'Post-seance'},{id:'creatine',name:'Creatine monohydrate',time:'Matin'},{id:'omega3',name:'Omega-3',time:'Au repas'},{id:'vitd',name:'Vitamine D3',time:'Matin'}];
+ 
+const NDB={
+petitdej:[
+{name:'Omelette proteinee classique',cal:380,p:34,g:5,l:24,badge:'Rapide 5 min',desc:'3 oeufs + 2 blancs dans poele antiadhesive. Sel, poivre, herbes. Avec 2 tartines pain complet.'},
+{name:'Porridge avoine-banane',cal:420,p:18,g:68,l:9,badge:'Rapide 5 min',desc:'80g flocons avoine + 250ml lait micro-onde 3 min. Ajouter 1 banane en rondelles + 1 cas beurre cacahuete.'},
+{name:'Yaourt grec granola',cal:350,p:22,g:38,l:10,badge:'2 min zero cuisson',desc:'250g yaourt grec 0% + 40g flocons avoine + myrtilles + filet miel. Pas de cuisson.'},
+{name:'Oeufs brouilles toast complet',cal:440,p:30,g:38,l:16,badge:'8 min',desc:'3 oeufs brouilles a feu doux + 2 tranches pain complet + 1 tranche saumon ou dinde.'},
+{name:'Shake proteine + flocons',cal:460,p:45,g:50,l:8,badge:'Ultra rapide 2 min',desc:'1 dose whey chocolat + 250ml lait amande + 60g flocons avoine dans shaker. Secouer 30 sec.'},
+{name:'Skyr fruits rouges',cal:280,p:25,g:32,l:3,badge:'Zero cuisson',desc:'250g skyr nature + 100g fruits rouges surgelés decongelés. Tres riche en proteines, rassasiant.'},
+],
+dejeuner:[
+{name:'Riz poulet legumes classique',cal:510,p:52,g:54,l:7,badge:'Rapide 10 min',desc:'200g blanc poulet poele + 150g riz basmati + 200g legumes surgeles vapeur micro-onde 5 min. Sauce soja.'},
+{name:'Saumon patate douce',cal:550,p:44,g:38,l:22,badge:'12 min',desc:'180g saumon poele 4 min/cote + 200g patate douce micro-onde 8 min + haricots verts. Citron.'},
+{name:'Bowl thon riz avocat',cal:490,p:40,g:46,l:14,badge:'Zero cuisson 3 min',desc:'1 boite thon egoutte + 150g riz froid + demi avocat + concombre + sauce soja + sesame.'},
+{name:'Boeuf hache patate douce',cal:530,p:48,g:36,l:18,badge:'12 min',desc:'200g boeuf hache 5% poele + 200g patate douce micro-onde + courgette. Herbes de Provence.'},
+{name:'Pates completes poulet',cal:570,p:46,g:60,l:13,badge:'12 min',desc:'80g pates completes + 180g poulet emince + 1 cas pesto + 30g parmesan. Salade en entree.'},
+{name:'Lentilles corail poisson',cal:480,p:42,g:44,l:12,badge:'15 min',desc:'200g lentilles corail cuites 15 min + 150g saumon vapeur + epinards. Tres riche en fibres.'},
+{name:'Wraps dinde legumes',cal:450,p:38,g:48,l:11,badge:'5 min zero cuisson',desc:'2 wraps complets + 150g dinde + salade + tomate + concombre + 1 cas houmous.'},
+{name:'Omelette jambon fromage',cal:420,p:44,g:6,l:24,badge:'8 min',desc:'4 oeufs + 2 tranches jambon + 30g gruyere allege + salade verte. Option faible glucides.'},
+],
+diner:[
+{name:'Saumon epinards quinoa',cal:490,p:42,g:36,l:18,badge:'15 min',desc:'180g saumon four 180C 15 min + 150g quinoa + epinards sautes ail huile olive. Riche en omega-3.'},
+{name:'Boeuf brocoli',cal:440,p:48,g:22,l:14,badge:'10 min',desc:'200g boeuf hache 5% + 250g brocoli vapeur micro-onde + petit bol riz si diner charge.'},
+{name:'Cabillaud vapeur courgettes',cal:320,p:38,g:18,l:6,badge:'Leger 12 min',desc:'200g cabillaud vapeur + 2 courgettes + tomates cerises. Sauce yaourt citron ciboulette. Diner leger.'},
+{name:'Poulet legumes rotis four',cal:480,p:50,g:24,l:14,badge:'25 min',desc:'200g poulet + poivrons + courgettes + oignons au four 200C 25 min. Huile olive + herbes.'},
+{name:'Crevettes sautees riz',cal:430,p:36,g:48,l:7,badge:'10 min',desc:'200g crevettes sautees ail citron persil + 120g riz. Legumes surgeles wok. Sauce soja.'},
+{name:'Tajine poulet pois chiches',cal:510,p:44,g:46,l:12,badge:'20 min',desc:'180g poulet + 1 boite pois chiches + tomates concassees + ras el hanout. Peut se preparer a lavance.'},
+{name:'Omelette legumes',cal:360,p:28,g:12,l:22,badge:'6 min diner leger',desc:'4 oeufs + champignons + poivrons + 30g chevre frais. Salade en complement.'},
+{name:'Steak thon patate douce',cal:470,p:46,g:34,l:14,badge:'12 min',desc:'200g steak thon grille 2 min/cote + 200g patate douce micro-onde + salade roquette.'},
+],
+collation:[
+{name:'Yaourt grec + amandes',cal:220,p:20,g:10,l:11,badge:'Zero preparation',desc:'200g yaourt grec 0% + 20g amandes brutes. 5 secondes de prep. Tres rassasiant.'},
+{name:'Shake whey post-seance',cal:200,p:30,g:12,l:4,badge:'2 min ideal post-seance',desc:'1 dose whey 30g + 250ml lait ecreme ou amande. Ideal dans les 30 min apres seance.'},
+{name:'Galettes riz + beurre cacahuete',cal:250,p:8,g:28,l:12,badge:'Pre-seance 2 min',desc:'2-3 galettes de riz + 30g beurre cacahuete sans sucre. Prendre 45-60 min avant seance.'},
+{name:'Fromage blanc 0% fruits',cal:180,p:20,g:18,l:1,badge:'Zero preparation',desc:'200g fromage blanc 0% + 100g fraises framboises myrtilles. Option 1 cas miel.'},
+{name:'Oeufs durs x2',cal:160,p:13,g:1,l:11,badge:'Preparer la veille',desc:'2 oeufs durs prepares la veille au frigo. Mange avec sel poivre moutarde. Ultra pratique.'},
+{name:'Skyr + noix',cal:200,p:22,g:10,l:8,badge:'Zero preparation',desc:'150g skyr nature + 15g noix + 1 pomme. Faible calories, tres proteine.'},
+{name:'Smoothie proteine banane',cal:310,p:28,g:38,l:5,badge:'5 min blender',desc:'1 banane + 1 dose whey vanille + 200ml lait amande + 1 cas flocons avoine. Mixer 30 sec.'},
+{name:'Thon pain complet',cal:260,p:30,g:22,l:4,badge:'Zero cuisson 2 min',desc:'1/2 boite thon egoutte + 2 tranches pain complet + moutarde. Simple proteine efficace.'},
+{name:'Barre proteince maison',cal:230,p:18,g:22,l:8,badge:'Preparer dimanche',desc:'80g flocons + 1 dose whey + 2 cas beurre cacahuete + 2 cas miel. Melanger + refrigerer 2h. Couper en barres.'},
+{name:'Carre chocolat noir 85%',cal:130,p:3,g:8,l:10,badge:'Plaisir sain 20g',desc:'20g chocolat noir 85%+ apres le diner. Magnesium, antioxydants. Satiete psychologique.'},
+],
+dessert:[
+{name:'Creme dessert proteince',cal:180,p:18,g:20,l:3,badge:'5 min + frigo 1h',desc:'200g fromage blanc 0% + 1 dose whey chocolat + 1 cas cacao + stevia. Frigo 1h pour texture creme.'},
+{name:'Banana ice cream',cal:140,p:2,g:34,l:1,badge:'Congeler 4h',desc:'2 bananes mures congelees 4h. Mixer directement congelees = glace naturelle. Ajouter cacao pour version choco.'},
+{name:'Compote sans sucre',cal:80,p:0,g:20,l:0,badge:'Zero preparation',desc:'150g compote pomme ou poire sans sucre ajoute. En pot. 1 cas cannelle dessus.'},
+{name:'Fruits frais yaourt',cal:160,p:8,g:26,l:3,badge:'Zero preparation',desc:'150g salade de fruits frais + 100g yaourt grec 0%. Naturellement sucre.'},
+{name:'Pain perdu proteine',cal:320,p:28,g:34,l:7,badge:'10 min plaisir',desc:'2 tranches pain complet trempes dans 2 oeufs + 50ml lait + cannelle. Poele antiadhesive.'},
+{name:'Mousse chocolat legere',cal:200,p:12,g:18,l:8,badge:'10 min + frigo 2h',desc:'200g fromage blanc 0% + 2 cas cacao + 1 blanc en neige + stevia. Frigo 2h minimum.'},
+{name:'Pancakes proteines',cal:380,p:32,g:40,l:9,badge:'15 min week-end',desc:'1 banane + 2 oeufs + 1 dose whey + 50g flocons mixe = pate. Cuire en portions. Miel leger.'},
+],
+legumes:[
+{name:'Brocoli',cal:35,p:3,g:4,l:0,badge:'Vapeur 5 min micro-onde',desc:'Riche en vitamine C, fibres. 200g = 70 kcal. Fleurettes + fond eau, 5 min micro-onde.'},
+{name:'Epinards',cal:23,p:3,g:2,l:0,badge:'Surgeles pratique',desc:'Surgeles en portion. 200g sautes poele avec ail et huile olive 3 min. Fond beaucoup.'},
+{name:'Courgette',cal:17,p:1,g:3,l:0,badge:'5 min rapide',desc:'Rondelles, poele 5 min sel poivre thym. Ou rapee crue en salade avec vinaigrette.'},
+{name:'Haricots verts',cal:31,p:2,g:5,l:0,badge:'Surgeles 5 min vapeur',desc:'Surgeles prets en 5 min micro-onde. Froids en salade ou chauds avec beurre leger.'},
+{name:'Poivrons',cal:31,p:1,g:6,l:0,badge:'Crus ou rotis',desc:'Crus en batonnets avec houmous, ou rotis 20 min four avec huile olive. Riches vitamine C.'},
+{name:'Tomates cerise',cal:18,p:1,g:4,l:0,badge:'Zero preparation',desc:'Directement dans salade ou avec sel poivre. 150g = 27 kcal.'},
+{name:'Champignons',cal:22,p:3,g:2,l:0,badge:'Poele 4 min',desc:'Lamelles, poele chaude avec ail et persil 4 min. Tres rassasiants malgre peu de calories.'},
+{name:'Chou fleur',cal:25,p:2,g:4,l:0,badge:'Substitut riz',desc:'Rape cru puis micro-onde 4 min = riz de chou-fleur. Ou roti four 20 min avec epices.'},
+{name:'Concombre',cal:15,p:1,g:3,l:0,badge:'Zero preparation',desc:'Rondelles dans salades ou batonnets avec sauce yaourt-menthe-citron. Tres hydratant.'},
+],
+proteines:[
+{name:'Blanc de poulet',cal:165,p:31,g:0,l:4,badge:'Pour 100g cuit - Reference',desc:'La proteine de base. Poele 5 min/cote ou four 200C 15 min. Peut mariner dans citron+herbes la veille.'},
+{name:'Saumon frais',cal:208,p:28,g:0,l:11,badge:'Pour 100g - Omega-3',desc:'Poele 4 min/cote ou papillote four 180C 15 min. Riche omega-3, excellente recuperation musculaire.'},
+{name:'Boeuf hache 5% MG',cal:135,p:22,g:0,l:5,badge:'Pour 100g',desc:'Poele chaude sans MG, 6-8 min. Assaisonner avec herbes de Provence ou epices marocaines.'},
+{name:'Oeufs entiers',cal:155,p:13,g:1,l:11,badge:'Pour 2 oeufs - Polyvalent',desc:'Brouilles, omelette, dur, poche. Source proteique la plus complete. Tres economique.'},
+{name:'Cabillaud Colin',cal:83,p:18,g:0,l:1,badge:'Pour 100g - Tres maigre',desc:'Poisson blanc le plus maigre. Vapeur 8 min ou four 15 min. Ideal diner leger.'},
+{name:'Thon en boite eau',cal:110,p:25,g:0,l:1,badge:'Pratique zero cuisson',desc:'1 boite 150g = 165 kcal pour 37g proteines. Avec moutarde, citron, persil.'},
+{name:'Crevettes decortiquees',cal:99,p:21,g:0,l:1,badge:'Pour 100g surgeles',desc:'Surgeles precuites = 3 min poele avec ail+citron. Tres faibles calories, excellente proteine.'},
+{name:'Dinde emincee',cal:145,p:29,g:0,l:3,badge:'Pour 100g - Plus maigre que poulet',desc:'Encore plus maigre que le poulet. Poele 4 min. Ideal phases acceleration.'},
+{name:'Lentilles cuites',cal:116,p:9,g:18,l:1,badge:'Pour 100g - Proteines + glucides',desc:'Lentilles en boite = zero cuisson. Rincees = pretes. Combo proteines+fibres+glucides complexes.'},
+],
+supplements:[
+{name:'Whey proteine',priority:'PRIORITE 1',col:'var(--green)',bg:'var(--gdim)',body:'La whey comble facilement les 190g/jour de proteines. Rapide a absorber, ideale 30 min post-seance. Choisir une whey native ou isolate de qualite.',dose:'30g (1 dose) + 250ml eau ou lait. 1 a 2x/jour. Budget 25-35 euros/kg.'},
+{name:'Creatine monohydrate',priority:'PRIORITE 1',col:'var(--green)',bg:'var(--gdim)',body:'Le complement le plus etudie au monde. Augmente la force de 5-15%, ameliore la recuperation, preserve le muscle en deficit calorique. 100% sur, prouve par des milliers d etudes.',dose:'5g/jour, matin avec eau. Pas besoin de phase de charge. Budget 15-25 euros/kg. Forme Creapure recommandee.'},
+{name:'Omega-3 EPA/DHA',priority:'PRIORITE 1',col:'var(--green)',bg:'var(--gdim)',body:'Reduit inflammation, ameliore recuperation et sensibilite musculaire aux proteines. 80% des Francais carences. Essentiel pour la sante cardiovasculaire.',dose:'2-3g/jour d EPA+DHA au repas gras. Budget 15-25 euros/mois. Favoriser huile de poisson qualite.'},
+{name:'Vitamine D3',priority:'PRIORITE 1',col:'var(--green)',bg:'var(--gdim)',body:'Deficit chez 80% des Francais en hiver. Essentielle pour testosterone, immunite, energie, sante osseuse. Impact direct sur la performance sportive.',dose:'2000 a 4000 UI/jour, matin au repas. A prendre octobre a avril minimum. Budget 5-10 euros/mois.'},
+{name:'Magnesium bisglycinate',priority:'PRIORITE 2',col:'var(--blue)',bg:'var(--bdim)',body:'Ameliore qualite du sommeil (crucial pour recuperation), reduit stress, crampes musculaires. Souvent deficitaire chez les sportifs actifs.',dose:'300-400mg/jour le soir au coucher. Forme bisglycinate = mieux absorbee. Budget 10-15 euros/mois.'},
+{name:'Multivitamines',priority:'PRIORITE 2',col:'var(--blue)',bg:'var(--bdim)',body:'En deficit calorique, difficile d avoir tous les micronutriments. Assurance nutritionnelle pratique. Choisir une formule complete sans mega-doses.',dose:'1 comprimé/jour le matin. Eviter les formules bas de gamme. Budget 10-20 euros/mois.'},
+{name:'Cafeine (cafe noir)',priority:'OPTION',col:'var(--amber)',bg:'var(--adim)',body:'Augmente les performances de 3-5%, brule plus de graisses pendant l effort. Ton cafe pre-seance suffit amplement. Pas besoin d acheter quoi que ce soit.',dose:'1-2 cafes noirs 30 min avant seance. Max 400mg/jour toutes sources. Arreter a 14h pour le sommeil.'},
+{name:'BCAA - inutile si whey',priority:'SKIP',col:'var(--text3)',bg:'var(--bg4)',body:'Si tu manges assez de proteines et prends de la whey, les BCAA n apportent strictement rien de plus. Economise cet argent pour la whey et la creatine.',dose:'Inutile avec 190g proteines/jour. Garde le budget pour whey + creatine + omega-3.'},
+]
 };
-
-const MONTHS_TARGET = [
-  { label:'Départ', kg:106 }, { label:'Mois 1', kg:103.5 },
-  { label:'Mois 2', kg:101 }, { label:'Mois 3', kg:98 },
-  { label:'Mois 4', kg:95 },  { label:'Mois 5', kg:92 },
-  { label:'Mois 6', kg:89 },
-];
-
-// ── STORAGE ───────────────────────────────────────────────────────────────────
-function todayKey() { return new Date().toISOString().slice(0,10); }
-
-function loadDay() {
-  const k = todayKey();
-  const d = localStorage.getItem('day_'+k);
-  return d ? JSON.parse(d) : { meals:{}, habits:{}, water:0 };
-}
-
-function saveDay(data) {
-  localStorage.setItem('day_'+todayKey(), JSON.stringify(data));
-}
-
-function loadWeights() {
-  const w = localStorage.getItem('weights');
-  return w ? JSON.parse(w) : [];
-}
-
-function saveWeights(arr) {
-  localStorage.setItem('weights', JSON.stringify(arr));
-}
-
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+ 
+const WORKOUTS={
+lundi:{title:'Bas du corps',col:'var(--accent)',desc:'Quadriceps, Fessiers, Ischio, Mollets',warmup:'5 min velo elliptique ou tapis. 2 series legeres squat sans charge pour lubrifier les genoux.',exercises:[
+{name:'Squat barre ou goblet squat',sets:'4 x 10',tip:'Descendre cuisses paralleles au sol. Dos droit. Talons au sol. Pousser genoux vers l exterieur.',evo:'M1-2: goblet avec haltere. M3+: barre guidee puis libre.'},
+{name:'Presse a cuisses 45 degres',sets:'3 x 12',tip:'Pieds largeur epaules, mi-hauteur plateforme. Ne pas verrouiller les genoux en haut.',evo:'+5kg toutes les 2 semaines si les 12 reps sont faciles.'},
+{name:'Fentes marchees',sets:'3 x 10 jambe',tip:'Grand pas en avant, genou arriere 2 cm du sol. Buste droit. Alterner les jambes.',evo:'M1: poids de corps. M2+: halteres dans les mains.'},
+{name:'Hip thrust',sets:'3 x 15',tip:'Dos sur banc, pieds a plat, barre sur bassin. Contracter fessiers en haut 1 sec.',evo:'M1: poids de corps. M2: barre vide. M3+: ajouter des disques.'},
+{name:'Leg curl assis ischio',sets:'3 x 12',tip:'Mouvement controle, pas d a-coup. Descendre lentement = phase negative importante.',evo:'+2.5 a 5kg des que les 12 reps sont propres.'},
+{name:'Mollets debout',sets:'4 x 15',tip:'Amplitude complete: descendre le talon sous le niveau de la marche. 1 sec contraction haute.',evo:'Machine ou step + haltere dans la main.'},
+],cooldown:'5 min etirements quadriceps + ischio + fessiers. 30 sec chaque cote.'},
+mercredi:{title:'Haut Push',col:'var(--accent)',desc:'Pectoraux, Epaules, Triceps',warmup:'5 min mobilite epaules. Bras en croix x20. Rotations x10. 2 series legeres developpe couche.',exercises:[
+{name:'Developpe couche halteres ou barre',sets:'4 x 10',tip:'Coudes a 45 degres du buste (pas a 90). Descendre jusqu a effleurer le torse.',evo:'M1-2: halteres. M3+: barre. +2.5kg/cote des que les 10 reps sont propres.'},
+{name:'Developpe militaire halteres',sets:'3 x 12',tip:'Assis sur banc incline 80 degres. Halteres hauteur epaules. Pousser sans verrouiller coudes.',evo:'Commencer leger (12-15kg total). Focus sur la forme avant de charger.'},
+{name:'Ecarte poulie basse ou halteres',sets:'3 x 15',tip:'Mouvement en arc de cercle. Legere flexion du coude fixe. Serrer pectoraux en haut.',evo:'Priorite a la sensation du pectoral plutot qu au poids soule.'},
+{name:'Elevations laterales',sets:'4 x 15',tip:'Bras legerement flechis. Lever jusqu a l horizontale. Pas de balancement des hanches.',evo:'M1: 6-8kg. M2: 8-10kg. M3+: 10-12kg. Progression lente = normale.'},
+{name:'Elevations frontales alternees',sets:'3 x 12',tip:'Lever un bras devant en alternance. Paume vers le bas. Arreter a hauteur des yeux.',evo:'Complementaire des laterales pour remplir les epaules avant.'},
+{name:'Triceps poulie haute',sets:'3 x 15',tip:'Coudes colles aux flancs et fixes tout le mouvement. Extension complete.',evo:'Peut varier: corde, barre droite, barre en V selon disponibilite.'},
+],cooldown:'Etirements pectoraux aux angles d un cadre de porte. Etirements triceps. 30 sec chaque cote.'},
+vendredi:{title:'Haut Pull',col:'var(--accent)',desc:'Dos, Biceps, Trapeces, Abdos',warmup:'5 min velo. Face pull leger 2 series x20 pour activer les rotateurs d epaules.',exercises:[
+{name:'Tirage vertical prise large',sets:'4 x 10',tip:'Se laisser etirer en haut. Tirer vers le sternum. Coudes pointes vers le bas et en arriere.',evo:'M1: machine guidee. M2+: poulie haute avec barre.'},
+{name:'Rowing barre ou halteres',sets:'3 x 12',tip:'Dos plat parallele au sol. Tirer le coude vers le haut et en arriere. Pas de rotation du dos.',evo:'Rowing haltere unilateral = excellente option pour chaque cote.'},
+{name:'Tirage horizontal poulie basse',sets:'3 x 12',tip:'S asseoir face a la poulie. Tirer vers le nombril. Coudes colles au corps. Dos droit.',evo:'Developpe l epaisseur du dos contrairement au tirage vertical.'},
+{name:'Face pull',sets:'3 x 15',tip:'Poulie haute. Tirer vers le visage en ecartant les bras. Coudes hauts. Preventif pour les epaules.',evo:'Ne pas trop charger. Cet exercice est preventif pas de force brute.'},
+{name:'Curl biceps halteres',sets:'3 x 12',tip:'Supination complete en haut (tourne la paume vers le plafond). Descendre lentement.',evo:'M1: 10-12kg. M2: 12-14kg. +2kg par main toutes les 3-4 semaines.'},
+{name:'Gainage planche',sets:'3 x 45 sec',tip:'Corps en ligne parfaite. Hanches ni hautes ni basses. Ventre rentre. Respirer.',evo:'M1: 30s. M2: 45s. M3: 60s. M4+: planche dynamique.'},
+],cooldown:'Grand etirement du dos: assis sur les talons bras tendus devant 30 sec. Etirements biceps.'},
+cardio:{title:'Cardio',col:'var(--green)',desc:'SkiErg, Footing, Marche active, HIIT',warmup:'3-5 min a intensite tres legere pour monter progressivement en frequence cardiaque.',exercises:[
+{name:'SkiErg Phase 1 - Mois 1-2',sets:'20-25 min Zone 2',tip:'Rythme: tu dois pouvoir parler en phrases courtes. FC cible 120-140 bpm. Bras tendus en haut, tirer fort vers le bas en flechissant les genoux.',evo:'Commencer par 15 min si difficile. +5 min toutes les 2 semaines.'},
+{name:'SkiErg Phase 2 - Mois 3-4',sets:'8 x (1min fort / 2min facile)',tip:'1 min: effort maximal, vitesse maximale. 2 min: recuperation active tres legere. Ne pas s arreter.',evo:'Passer a 10 x (1/2) quand les 8 intervalles sont geres.'},
+{name:'Footing continu Phase 2-3',sets:'25-35 min allure confort',tip:'Test de la conversation: tu dois pouvoir parler. Si haletant = trop vite. Commencer par run/walk si necessaire.',evo:'M3: 20 min. M4: 25 min. M5: 30 min. M6: 35-40 min.'},
+{name:'Marche active Phase 1 alternative',sets:'35-45 min soutenu',tip:'2 bons km en 20-25 min = bonne allure. Bras qui balancent. Remplace le footing si douleur aux genoux.',evo:'Augmenter duree ou ajouter du denienie progressivement.'},
+{name:'HIIT SkiErg Phase 3',sets:'15 min 20s effort / 40s repos',tip:'20 sec effort maximal + 40 sec recuperation = 1 cycle. x15 cycles. Tres intense, reserver aux jours avec energie.',evo:'Brule plus de calories en moins de temps que cardio continu.'},
+],cooldown:'5 min marche tres lente. Etirements mollets + quadriceps + dos.'}
+};
+ 
+const todayKey=()=>new Date().toISOString().slice(0,10);
+const loadDay=()=>{const d=localStorage.getItem('day_'+todayKey());return d?JSON.parse(d):{meals:{},habits:{},supps:{},water:0}};
+const saveDay=d=>localStorage.setItem('day_'+todayKey(),JSON.stringify(d));
+const loadWeights=()=>{const w=localStorage.getItem('weights');return w?JSON.parse(w):[]};
+const saveWeights=a=>localStorage.setItem('weights',JSON.stringify(a));
+const loadCal=()=>{const c=localStorage.getItem('cal_data');return c?JSON.parse(c):{}};
+const saveCal=d=>localStorage.setItem('cal_data',JSON.stringify(d));
+ 
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
+  if(id==='suivi')renderSuivi();
 }
-
-function showSportTab(tab) {
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('seg-'+tab).classList.add('active');
-  renderSportContent(tab);
-}
-
-// ── TODAY ─────────────────────────────────────────────────────────────────────
-function renderToday() {
-  // Date
-  const now = new Date();
-  const opts = { weekday:'long', day:'numeric', month:'long' };
-  document.getElementById('today-date').textContent = now.toLocaleDateString('fr-FR', opts);
-
-  const data = loadDay();
-
-  // Meals
-  const ml = document.getElementById('meals-list');
-  ml.innerHTML = '';
-  MEALS.forEach(m => {
-    const done = !!data.meals[m.id];
-    const el = document.createElement('div');
-    el.className = 'check-item' + (done ? ' done' : '');
-    el.innerHTML = `
-      <div class="check-box">
-        <svg class="check-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <polyline points="2,7 5.5,10.5 12,3.5"/>
-        </svg>
-      </div>
-      <div class="check-content">
-        <div class="check-name">${m.name}</div>
-        <div class="check-detail">${m.detail}</div>
-      </div>
-      <div class="check-time">${m.time}</div>
-    `;
-    el.onclick = () => toggleMeal(m.id);
+ 
+function mkCheck(svg){return `<svg class="ci-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1.5,6 4.5,9.5 10.5,2.5"/></svg>`}
+ 
+function renderToday(){
+  const now=new Date();
+  document.getElementById('today-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  const d=loadDay();
+  let totalCal=0;
+  MEALS.forEach(m=>{if(d.meals[m.id])totalCal+=m.cal});
+  document.getElementById('cal-consumed').textContent=totalCal;
+  document.getElementById('cal-left').textContent=Math.max(0,2000-totalCal);
+  document.getElementById('cal-bar').style.width=Math.min(100,(totalCal/2000)*100)+'%';
+  const ml=document.getElementById('meals-list');ml.innerHTML='';
+  MEALS.forEach(m=>{
+    const done=!!d.meals[m.id];const el=document.createElement('div');el.className='ci'+(done?' done':'');
+    el.innerHTML=`<div class="ci-box">${mkCheck()}</div><div class="ci-body"><div class="ci-name">${m.name}</div><div class="ci-detail">${m.detail}</div></div><div class="ci-right">${m.time}<br><span style="color:var(--amber);font-size:10px">${m.cal} kcal</span></div>`;
+    el.onclick=()=>{const d2=loadDay();d2.meals[m.id]=!d2.meals[m.id];saveDay(d2);renderToday();if(d2.meals[m.id])toast('Repas coche');};
     ml.appendChild(el);
   });
-
-  // Habits
-  const hl = document.getElementById('habits-list');
-  hl.innerHTML = '';
-  HABITS.forEach(h => {
-    const done = !!data.habits[h.id];
-    const el = document.createElement('div');
-    el.className = 'check-item' + (done ? ' done' : '');
-    el.innerHTML = `
-      <div class="check-box">
-        <svg class="check-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <polyline points="2,7 5.5,10.5 12,3.5"/>
-        </svg>
-      </div>
-      <div class="check-content">
-        <div class="check-name">${h.name}</div>
-        <div class="check-detail">${h.detail}</div>
-      </div>
-    `;
-    el.onclick = () => toggleHabit(h.id);
+  const w=d.water||0;
+  document.getElementById('water-val').textContent=w.toFixed(1).replace('.',',')+'  / 2,5L';
+  document.getElementById('water-bar').style.width=Math.min(100,(w/2.5)*100)+'%';
+  const hl=document.getElementById('habits-list');hl.innerHTML='';
+  HABITS.forEach(h=>{
+    const done=!!d.habits[h.id];const el=document.createElement('div');el.className='ci'+(done?' done':'');
+    el.innerHTML=`<div class="ci-box">${mkCheck()}</div><div class="ci-body"><div class="ci-name">${h.name}</div><div class="ci-detail">${h.detail}</div></div>`;
+    el.onclick=()=>{const d2=loadDay();d2.habits[h.id]=!d2.habits[h.id];saveDay(d2);renderToday();if(d2.habits[h.id])toast('Habitude validee');};
     hl.appendChild(el);
   });
-
-  // Water
-  const water = data.water || 0;
-  document.getElementById('water-val').textContent = water.toFixed(1).replace('.',',') + ' / 2,5L';
-  document.getElementById('water-bar').style.width = Math.min(100, (water/2.5)*100) + '%';
-
-  // Ring
-  updateRing(data);
+  const sl=document.getElementById('supps-list');sl.innerHTML='';
+  SUPPS.forEach(s=>{
+    const done=!!d.supps[s.id];const el=document.createElement('div');el.className='ci'+(done?' done':'');
+    el.innerHTML=`<div class="ci-box">${mkCheck()}</div><div class="ci-body"><div class="ci-name">${s.name}</div></div><div class="ci-right">${s.time}</div>`;
+    el.onclick=()=>{const d2=loadDay();d2.supps[s.id]=!d2.supps[s.id];saveDay(d2);renderToday();if(d2.supps[s.id])toast('Complement pris');};
+    sl.appendChild(el);
+  });
+  const mDone=MEALS.filter(m=>d.meals[m.id]).length;
+  const hDone=HABITS.filter(h=>d.habits[h.id]).length;
+  const wDone=(d.water||0)>=2.5?1:0;
+  const sDone=SUPPS.filter(s=>d.supps[s.id]).length;
+  const total=MEALS.length+HABITS.length+1+SUPPS.length;
+  const pct=Math.round(((mDone+hDone+wDone+sDone)/total)*100);
+  document.getElementById('ring-pct').textContent=pct+'%';
+  const circ=2*Math.PI*52;
+  document.getElementById('ring-fill').style.strokeDashoffset=circ-(circ*pct/100);
 }
-
-function updateRing(data) {
-  const mealsDone = MEALS.filter(m => data.meals[m.id]).length;
-  const habitsDone = HABITS.filter(h => data.habits[h.id]).length;
-  const waterDone = (data.water || 0) >= 2.5 ? 1 : 0;
-  const total = MEALS.length + HABITS.length + 1;
-  const done = mealsDone + habitsDone + waterDone;
-  const pct = Math.round((done/total)*100);
-
-  document.getElementById('ring-pct').textContent = pct + '%';
-  const circ = 2 * Math.PI * 56;
-  const offset = circ - (circ * pct / 100);
-  document.getElementById('ring-progress').style.strokeDashoffset = offset;
-}
-
-function toggleMeal(id) {
-  const data = loadDay();
-  data.meals[id] = !data.meals[id];
-  saveDay(data);
-  renderToday();
-  if (data.meals[id]) showToast('Repas coché ✓');
-}
-
-function toggleHabit(id) {
-  const data = loadDay();
-  data.habits[id] = !data.habits[id];
-  saveDay(data);
-  renderToday();
-  if (data.habits[id]) showToast('Habitude validée ✓');
-}
-
-function addWater(amount) {
-  const data = loadDay();
-  data.water = Math.max(0, Math.min(5, (data.water || 0) + amount));
-  saveDay(data);
-  renderToday();
-  if (amount > 0) showToast('+' + (amount*1000) + 'ml ajoutés');
-}
-
-function resetDay() {
-  if (confirm('Réinitialiser toute la journée ?')) {
-    saveDay({ meals:{}, habits:{}, water:0 });
-    renderToday();
-    showToast('Journée réinitialisée');
+ 
+function addWater(a){const d=loadDay();d.water=Math.max(0,Math.min(5,(d.water||0)+a));saveDay(d);renderToday();if(a>0)toast('+'+Math.round(a*1000)+'ml')}
+function resetDay(){if(confirm('Reinitialiser toute la journee?')){saveDay({meals:{},habits:{},supps:{},water:0});renderToday();toast('Reinitialise')}}
+ 
+function showNutriTab(tab,btn){
+  if(btn){document.querySelectorAll('#nutri-seg .seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+  const el=document.getElementById('nutri-content');el.innerHTML='';
+  if(tab==='supplements'){
+    NDB.supplements.forEach(s=>{
+      const c=document.createElement('div');c.className='supp-card';
+      c.innerHTML=`<div class="supp-hdr"><div class="supp-name">${s.name}</div><div class="supp-pri" style="background:${s.bg};color:${s.col}">${s.priority}</div></div><div class="supp-body">${s.body}</div><div class="supp-dose">-> ${s.dose}</div>`;
+      el.appendChild(c);
+    });return;
   }
+  const data=NDB[tab]||[];
+  data.forEach(f=>{
+    const c=document.createElement('div');c.className='food-card';
+    c.innerHTML=`<div class="food-hdr"><div class="food-name">${f.name}</div><div class="food-cal">${f.cal} kcal</div></div><div class="food-macros"><div class="food-macro">P: <span>${f.p}g</span></div><div class="food-macro">G: <span>${f.g}g</span></div><div class="food-macro">L: <span>${f.l}g</span></div></div><div class="food-desc">${f.desc}</div><div class="food-badge">${f.badge}</div>`;
+    el.appendChild(c);
+  });
 }
-
-// ── SPORT ─────────────────────────────────────────────────────────────────────
-function renderSportContent(tab) {
-  const el = document.getElementById('sport-content');
-  if (tab === 'week') {
-    el.innerHTML = `
-      <div class="card">
-        <div class="card-title">Planning semaine</div>
-        ${[
-          { day:'Lundi', type:'Bas du corps', color:'var(--accent)' },
-          { day:'Mardi', type:'Repos', color:'var(--text3)' },
-          { day:'Mercredi', type:'Haut Push', color:'var(--accent)' },
-          { day:'Jeudi', type:'Repos', color:'var(--text3)' },
-          { day:'Vendredi', type:'Haut Pull', color:'var(--accent)' },
-          { day:'Samedi', type:'Cardio · SkiErg', color:'var(--green)' },
-          { day:'Dimanche', type:'Repos', color:'var(--text3)' },
-        ].map(d => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:14px;color:var(--text2);">${d.day}</span>
-            <span style="font-size:13px;font-weight:500;color:${d.color};">${d.type}</span>
-          </div>
-        `).join('')}
-      </div>
-      <div class="card" style="background:var(--green-dim);border-color:rgba(74,222,128,0.2);">
-        <div class="card-title" style="color:var(--green);">SkiErg — ton allié</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.6;">Zero impact articulaire · Full body · Cardio intense<br>Parfait par mauvais temps en remplacement du footing.</div>
-      </div>
-    `;
+ 
+function showSportTab(tab,btn){
+  if(btn){document.querySelectorAll('#sport-seg .seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+  const el=document.getElementById('sport-content');
+  if(tab==='planning'){
+    el.innerHTML=`<div class="card"><div class="card-title">Semaine type</div>${[{d:'Lundi',t:'Bas du corps',c:'var(--accent)'},{d:'Mardi',t:'Repos complet',c:'var(--text3)'},{d:'Mercredi',t:'Haut - Push',c:'var(--accent)'},{d:'Jeudi',t:'Repos complet',c:'var(--text3)'},{d:'Vendredi',t:'Haut - Pull',c:'var(--accent)'},{d:'Samedi',t:'Cardio SkiErg',c:'var(--green)'},{d:'Dimanche',t:'Repos ou marche',c:'var(--amber)'}].map(x=>`<div class="row"><span style="font-size:13px">${x.d}</span><span style="font-size:12px;font-weight:500;color:${x.c}">${x.t}</span></div>`).join('')}</div><div class="card" style="background:var(--gdim);border-color:rgba(74,222,128,0.2)"><div class="card-title" style="color:var(--green)">SkiErg - pourquoi c est parfait</div><div style="font-size:12px;color:var(--text2);line-height:1.6">Zero impact articulaire, Full body, Haute depense calorique<br>Travaille dos, epaules, abdos, jambes<br>Parfait par mauvais temps en remplacement du footing<br>Disponible dans ta salle</div></div>`;
     return;
   }
-
-  const w = WORKOUTS[tab];
-  if (!w) return;
-
-  const stored = JSON.parse(localStorage.getItem('sport_'+todayKey()+'_'+tab) || '{}');
-
-  el.innerHTML = `
-    <div class="card">
-      <div style="margin-bottom:14px;">
-        <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:2px;">${w.title}</div>
-        <div style="font-size:12px;color:var(--text2);">${w.desc}</div>
-      </div>
-      ${w.exercises.map((ex, i) => `
-        <div class="ex-row" id="ex-row-${i}" onclick="toggleExercise('${tab}',${i})" style="cursor:pointer;">
-          <div>
-            <div class="ex-name" style="${stored[i] ? 'text-decoration:line-through;color:var(--text3);' : ''}">${ex.name}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span class="ex-sets">${ex.sets}</span>
-            ${stored[i] ? '<svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>' : ''}
-          </div>
-        </div>
-      `).join('')}
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:12px;color:var(--text2);">${Object.keys(stored).length} / ${w.exercises.length} exercices</span>
-        <span style="font-size:12px;color:${Object.keys(stored).length === w.exercises.length ? 'var(--green)' : 'var(--text3)'};">
-          ${Object.keys(stored).length === w.exercises.length ? 'Séance terminée ✓' : 'En cours...'}
-        </span>
-      </div>
-    </div>
-  `;
-}
-
-function toggleExercise(tab, idx) {
-  const key = 'sport_'+todayKey()+'_'+tab;
-  const stored = JSON.parse(localStorage.getItem(key) || '{}');
-  stored[idx] = !stored[idx];
-  if (!stored[idx]) delete stored[idx];
-  localStorage.setItem(key, JSON.stringify(stored));
-  renderSportContent(tab);
-  if (stored[idx] !== undefined || true) showToast('Exercice validé ✓');
-}
-
-// ── POIDS ─────────────────────────────────────────────────────────────────────
-function renderPoids() {
-  const weights = loadWeights();
-  const latest = weights.length ? weights[weights.length-1] : null;
-  const start = 106;
-  const target = 88;
-
-  if (latest) {
-    document.getElementById('current-weight-display').textContent = latest.kg.toFixed(1) + ' kg';
-    const lost = start - latest.kg;
-    const pct = Math.max(0, Math.min(100, (lost / (start - target)) * 100));
-    document.getElementById('weight-pct-val').textContent = Math.round(pct) + '%';
-    document.getElementById('weight-progress-bar').style.width = pct + '%';
-    document.getElementById('lost-display').textContent = lost > 0 ? lost.toFixed(1) : '0';
-
-    if (weights.length > 1) {
-      const prev = weights[weights.length-2];
-      const diff = latest.kg - prev.kg;
-      const sign = diff > 0 ? '+' : '';
-      document.getElementById('weight-diff-display').textContent = sign + diff.toFixed(1) + ' kg vs mesure précédente';
-    }
-  } else {
-    document.getElementById('current-weight-display').textContent = '— kg';
-    document.getElementById('weight-diff-display').textContent = 'Ajoute ta première pesée';
-    document.getElementById('weight-pct-val').textContent = '0%';
-    document.getElementById('lost-display').textContent = '0';
+  if(tab==='progression'){
+    el.innerHTML=`<div class="card"><div class="card-title">Comment progresser</div><div class="row"><span style="font-size:12px;color:var(--text2)">Surcharge progressive</span><span style="font-size:11px;color:var(--accent)">+poids ou +reps chaque semaine</span></div><div class="row"><span style="font-size:12px;color:var(--text2)">Regle des 2 reps</span><span style="font-size:11px;color:var(--text2)">Si +2 reps de plus, augmenter le poids</span></div><div class="row"><span style="font-size:12px;color:var(--text2)">Tempo recommande</span><span style="font-size:11px;color:var(--text2)">2s descente, 1s contraction, 1s montee</span></div><div class="row"><span style="font-size:12px;color:var(--text2)">Repos entre series</span><span style="font-size:11px;color:var(--text2)">90s a 2 min</span></div><div class="row" style="border:none"><span style="font-size:12px;color:var(--text2)">Noter ses charges</span><span style="font-size:11px;color:var(--amber)">Indispensable</span></div></div><div class="card"><div class="card-title">Progression charges indicatives</div>${[{ex:'Squat',m1:'Goblet 12-16kg',m3:'Barre 40-60kg',m6:'Barre 60-80kg'},{ex:'Developpe couche',m1:'Halteres 2x10kg',m3:'Barre 50-60kg',m6:'Barre 70-80kg'},{ex:'Tirage vertical',m1:'60-70kg',m3:'80-90kg',m6:'95-110kg'},{ex:'Hip thrust',m1:'Poids de corps',m3:'Barre +20kg',m6:'Barre +40kg'}].map(e=>`<div style="padding:9px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600;margin-bottom:4px">${e.ex}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:9px;padding:2px 7px;border-radius:4px;background:var(--gdim);color:var(--green);font-family:'DM Mono',monospace">M1: ${e.m1}</span><span style="font-size:9px;padding:2px 7px;border-radius:4px;background:rgba(232,232,232,0.08);color:var(--accent);font-family:'DM Mono',monospace">M3: ${e.m3}</span><span style="font-size:9px;padding:2px 7px;border-radius:4px;background:var(--adim);color:var(--amber);font-family:'DM Mono',monospace">M6: ${e.m6}</span></div></div>`).join('')}</div>`;
+    return;
   }
-
-  // Log
-  const log = document.getElementById('weight-log');
-  if (weights.length === 0) {
-    log.innerHTML = '<div class="empty-state">Aucune pesée enregistrée</div>';
-  } else {
-    const reversed = [...weights].reverse().slice(0, 15);
-    log.innerHTML = reversed.map((w, i) => {
-      const prev = i < reversed.length-1 ? reversed[i+1] : null;
-      let diffHtml = '';
-      if (prev) {
-        const d = w.kg - prev.kg;
-        const cls = d < 0 ? 'down' : d > 0 ? 'up' : 'eq';
-        const sign = d > 0 ? '+' : '';
-        diffHtml = `<span class="wl-diff ${cls}">${sign}${d.toFixed(1)}</span>`;
-      }
-      return `
-        <div class="weight-log-item">
-          <span class="wl-date">${w.date}</span>
-          <span class="wl-val">${w.kg.toFixed(1)} kg</span>
-          ${diffHtml}
-        </div>
-      `;
-    }).join('');
-  }
+  const w=WORKOUTS[tab];if(!w)return;
+  const stored=JSON.parse(localStorage.getItem('sport_'+todayKey()+'_'+tab)||'{}');
+  const doneCount=Object.values(stored).filter(Boolean).length;
+  el.innerHTML=`<div class="card"><div style="margin-bottom:12px"><div style="font-size:18px;font-weight:600;color:${w.col};margin-bottom:2px">${w.title}</div><div style="font-size:11px;color:var(--text2)">${w.desc}</div></div><div style="background:var(--bg3);border-radius:9px;padding:10px;margin-bottom:12px"><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px">ECHAUFFEMENT</div><div style="font-size:11px;color:var(--text2);line-height:1.5">${w.warmup}</div></div>${w.exercises.map((ex,i)=>`<div class="ex-row" onclick="toggleEx('${tab}',${i})"><div class="ex-left"><div class="ex-name" style="${stored[i]?'text-decoration:line-through;color:var(--text3)':''}">${ex.name}</div><div class="ex-tip">${ex.tip}</div><div class="ex-evo" style="color:${w.col}">Progression: ${ex.evo}</div></div><div class="ex-right"><span class="ex-sets">${ex.sets}</span>${stored[i]?'<svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="1.5,6 4.5,9.5 10.5,2.5"/></svg>':''}</div></div>`).join('')}<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--text2)">${doneCount} / ${w.exercises.length} exercices</span><span style="font-size:12px;color:${doneCount===w.exercises.length?'var(--green)':'var(--text3)'}">${doneCount===w.exercises.length?'Seance terminee !':'En cours...'}</span></div></div><div class="card" style="background:var(--bg3)"><div class="card-title">Recuperation</div><div style="font-size:11px;color:var(--text2);line-height:1.5">${w.cooldown}</div></div>`;
 }
-
-function addWeight() {
-  const input = document.getElementById('weight-input');
-  const val = parseFloat(input.value);
-  if (!val || val < 40 || val > 200) { showToast('Poids invalide'); return; }
-
-  const weights = loadWeights();
-  const today = todayKey();
-
-  // Replace if same day
-  const idx = weights.findIndex(w => w.date === today);
-  if (idx >= 0) weights[idx] = { date:today, kg:val };
-  else weights.push({ date:today, kg:val });
-
-  saveWeights(weights);
-  input.value = '';
-  renderPoids();
-  showToast('Poids enregistré ✓');
+ 
+function toggleEx(tab,idx){
+  const key='sport_'+todayKey()+'_'+tab;
+  const stored=JSON.parse(localStorage.getItem(key)||'{}');
+  stored[idx]=!stored[idx];if(!stored[idx])delete stored[idx];
+  localStorage.setItem(key,JSON.stringify(stored));
+  const cal=loadCal();const today=todayKey();
+  if(!cal[today])cal[today]=tab==='cardio'?'cardio':'muscu';
+  saveCal(cal);
+  showSportTab(tab,null);toast('Exercice valide');
 }
-
-// ── PROGRESSION ───────────────────────────────────────────────────────────────
-function renderProgression() {
-  const weights = loadWeights();
-  const latest = weights.length ? weights[weights.length-1].kg : 106;
-  const start = 106, target = 88;
-
-  const el = document.getElementById('monthly-progress');
-  el.innerHTML = MONTHS_TARGET.map(m => {
-    const lost = start - m.kg;
-    const pct = Math.max(0, Math.min(100, (lost/(start-target))*100));
-    const actualLost = start - latest;
-    const isCurrentish = Math.abs(latest - m.kg) < 2;
-    return `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;min-width:46px;">${m.label}</span>
-        <div style="flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${isCurrentish ? 'var(--amber)' : 'var(--accent)'};border-radius:2px;transition:width 0.5s;"></div>
-        </div>
-        <span style="font-size:12px;font-family:'DM Mono',monospace;color:${isCurrentish ? 'var(--amber)' : 'var(--text2)'};min-width:52px;text-align:right;">${m.kg} kg</span>
-      </div>
-    `;
+ 
+function renderSuivi(){renderWeightUI();renderCalendar();renderMonthlyTargets()}
+ 
+function renderWeightUI(){
+  const weights=loadWeights();const latest=weights.length?weights[weights.length-1]:null;
+  if(latest){
+    document.getElementById('cur-weight').textContent=latest.kg.toFixed(1)+' kg';
+    const lost=106-latest.kg;const pct=Math.max(0,Math.min(100,(lost/18)*100));
+    document.getElementById('w-pct').textContent=Math.round(pct)+'%';
+    document.getElementById('w-bar').style.width=pct+'%';
+    document.getElementById('lost-kg').textContent=lost>0?lost.toFixed(1):'0';
+    if(weights.length>1){const diff=latest.kg-weights[weights.length-2].kg;const s=diff>0?'+':'';document.getElementById('weight-diff').textContent=s+diff.toFixed(1)+' kg vs mesure precedente';}
+  }else{document.getElementById('cur-weight').textContent='-- kg';document.getElementById('weight-diff').textContent='Ajoute ta premiere pesee';}
+  const log=document.getElementById('weight-log');
+  if(!weights.length){log.innerHTML='<div class="empty-state">Aucune pesee enregistree</div>';return}
+  log.innerHTML=[...weights].reverse().slice(0,20).map((w,i,arr)=>{
+    const prev=i<arr.length-1?arr[i+1]:null;let diffHtml='';
+    if(prev){const d=w.kg-prev.kg;const cls=d<0?'down':d>0?'up':'';diffHtml=`<span class="log-diff ${cls}">${d>0?'+':''}${d.toFixed(1)}</span>`}
+    return `<div class="log-item"><span class="log-date">${w.date}</span><span class="log-val">${w.kg.toFixed(1)} kg</span>${diffHtml}<span onclick="deleteWeight('${w.date}')" style="font-size:11px;color:var(--text3);cursor:pointer;padding:4px">x</span></div>`;
   }).join('');
 }
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+ 
+function addWeight(){
+  const val=parseFloat(document.getElementById('w-input').value);
+  if(!val||val<40||val>200){toast('Poids invalide');return}
+  const weights=loadWeights();const today=todayKey();
+  const idx=weights.findIndex(w=>w.date===today);
+  if(idx>=0)weights[idx]={date:today,kg:val};else weights.push({date:today,kg:val});
+  saveWeights(weights);document.getElementById('w-input').value='';
+  renderWeightUI();toast('Poids enregistre');
 }
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
+ 
+function deleteWeight(date){
+  if(!confirm('Supprimer cette pesee?'))return;
+  saveWeights(loadWeights().filter(w=>w.date!==date));renderWeightUI();toast('Supprime');
+}
+ 
+let calEditDate=null;
+ 
+function renderCalendar(){
+  const cal=loadCal();const now=new Date();const y=now.getFullYear(),m=now.getMonth();
+  const firstDay=new Date(y,m,1).getDay();const daysInMonth=new Date(y,m+1,0).getDate();
+  const todayStr=todayKey();const startOffset=(firstDay+6)%7;
+  let html='<div class="cal-grid">';
+  ['L','M','M','J','V','S','D'].forEach(d=>{html+=`<div class="cal-day-label">${d}</div>`});
+  for(let i=0;i<startOffset;i++)html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isFuture=dateStr>todayStr;const isToday=dateStr===todayStr;const val=cal[dateStr];
+    let cls='cal-day';
+    if(isFuture)cls+=' future';
+    else if(['muscu','cardio','skierg','run','marche'].includes(val))cls+=' done';
+    else if(val==='rest')cls+=' rest';
+    if(isToday)cls+=' today';
+    const emoji=val==='muscu'?'M':val==='cardio'||val==='run'?'C':val==='skierg'?'S':val==='marche'?'W':val==='rest'?'R':'';
+    html+=`<div class="${cls}" onclick="${isFuture?'':'openCalModal(\''+dateStr+'\')'}">${emoji||d}</div>`;
+  }
+  html+='</div>';document.getElementById('cal-container').innerHTML=html;
+  const thisMonth=Object.entries(cal).filter(([k])=>k.startsWith(`${y}-${String(m+1).padStart(2,'0')}`));
+  const sessions=thisMonth.filter(([,v])=>v==='muscu').length;
+  const cardios=thisMonth.filter(([,v])=>['cardio','skierg','run','marche'].includes(v)).length;
+  document.getElementById('month-sessions').textContent=sessions;
+  document.getElementById('month-cardio').textContent=cardios;
+  document.getElementById('month-total').textContent=sessions+cardios;
+}
+ 
+function openCalModal(date){
+  calEditDate=date;const cal=loadCal();
+  document.getElementById('cal-modal-title').textContent='Modifier le '+date;
+  document.getElementById('cal-edit-select').value=cal[date]||'';
+  document.getElementById('cal-modal').classList.add('open');
+}
+ 
+function saveCalDay(){
+  const val=document.getElementById('cal-edit-select').value;
+  const cal=loadCal();if(val)cal[calEditDate]=val;else delete cal[calEditDate];
+  saveCal(cal);document.getElementById('cal-modal').classList.remove('open');
+  renderCalendar();toast('Jour mis a jour');
+}
+ 
+function renderMonthlyTargets(){
+  const targets=[{l:'Depart',kg:106},{l:'Mois 1',kg:103.5},{l:'Mois 2',kg:101},{l:'Mois 3',kg:98},{l:'Mois 4',kg:95},{l:'Mois 5',kg:92},{l:'Mois 6',kg:89}];
+  const weights=loadWeights();const latest=weights.length?weights[weights.length-1].kg:106;
+  document.getElementById('monthly-targets').innerHTML=targets.map(t=>{
+    const lost=106-t.kg;const pct=Math.round((lost/18)*100);const isClose=Math.abs(latest-t.kg)<1.5;
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px"><span style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;min-width:44px">${t.l}</span><div style="flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${isClose?'var(--amber)':'var(--accent)'};border-radius:2px"></div></div><span style="font-size:11px;font-family:'DM Mono',monospace;color:${isClose?'var(--amber)':'var(--text2)'};min-width:48px;text-align:right">${t.kg} kg</span></div>`;
+  }).join('');
+}
+ 
+let toastTimer;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800)}
+ 
 renderToday();
-renderSportContent('week');
-renderPoids();
-renderProgression();
+showNutriTab('petitdej',null);
+showSportTab('planning',null);
 </script>
 </body>
 </html>
